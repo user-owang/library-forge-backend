@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 30
+    },
+    "description": {
+      "type": "string"
+    },
+    "imgURL": {
+      "type": "string"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "future",
+        "historic",
+        "timeless",
+        "gladiator",
+        "pioneer",
+        "explorer",
+        "modern",
+        "legacy",
+        "pauper",
+        "vintage",
+        "penny",
+        "commander",
+        "oathbreaker",
+        "standardbrawl",
+        "brawl",
+        "alchemy",
+        "paupercommander",
+        "oldschool",
+        "premodern",
+        "predh"
+      ]
+    }
+  },
+  "required": [
+    "name",
+    "format"
+  ]
+}

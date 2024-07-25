@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String         @id @default(uuid())
+  username String         @unique
+  email    String         @unique
+  password String
+  decks    Deck[]         @relation("decks")
+  likes    UserDeckLike[]
+}
+
+model Deck {
+  id          String         @id @default(uuid())
+  createdAt   DateTime       @default(now())
+  name        String
+  description String?
+  imgURL      String
+  format      Format
+  creator     User           @relation("decks", fields: [creatorId], references: [id])
+  creatorId   String
+  DeckCard    DeckCard[]
+  likes       UserDeckLike[]
+}
+
+enum Format {
+  standard
+  future
+  historic
+  timeless
+  gladiator
+  pioneer
+  explorer
+  modern
+  legacy
+  pauper
+  vintage
+  penny
+  commander
+  oathbreaker
+  standardbrawl
+  brawl
+  alchemy
+  paupercommander
+  oldschool
+  premodern
+  predh
+}
+
+model Card {
+  id             String     @id
+  scryfallID     String
+  arenaID        String?
+  oracleID       String
+  name           String
+  manaCost       String
+  cmc            Int
+  color_identity Json
+  DeckCard       DeckCard[]
+  typeLine       String
+}
+
+model DeckCard {
+  deckID    String
+  cardID    String
+  quantity  Int
+  boardType BoardType
+  deck      Deck      @relation(fields: [deckID], references: [id])
+  card      Card      @relation(fields: [cardID], references: [id])
+
+  @@id([deckID, cardID])
+}
+
+model UserDeckLike {
+  userID String
+  deckID String
+  user   User   @relation(fields: [userID], references: [id])
+  deck   Deck   @relation(fields: [deckID], references: [id])
+
+  @@id([userID, deckID])
+}
+
+enum BoardType {
+  deck
+  sideboard
+  maybeboard
+}
