@@ -1,14 +1,24 @@
 import {db} from "../utils/db.server"
 
-export const createDeck = async (username,password,email) =>{
-  return db.user.create({
-    data: {
-      username,
-      password,
-      email
-    },
+export const createDeck = async (deck) =>{
+  
+  return db.deck.create({
+    data: deck,
     select: {
-      username: true
+      id: true
     }
+  })
+}
+
+export const getDeck = async (id) => {
+  return db.deck.findUnique({
+    where: {id}
+  })
+}
+
+export const updateDeck = async (id,data) => {
+  return db.deck.update({
+    where: {id},
+    data
   })
 }

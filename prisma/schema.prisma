@@ -29,8 +29,8 @@ model Deck {
   description String?
   imgURL      String
   format      Format
-  creator     User           @relation("decks", fields: [creatorId], references: [id])
-  creatorId   String
+  creator     User           @relation("decks", fields: [creatorID], references: [id])
+  creatorID   String
   DeckCard    DeckCard[]
   likes       UserDeckLike[]
 }

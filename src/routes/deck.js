@@ -6,9 +6,9 @@ import express from "express";
 const router = new express.Router();
 import { createToken } from "../../helpers/tokens";
 import newDeckSchema from "../schemas/newDeck.json";
-import { BadRequestError } from "../../expressError";
+import { BadRequestError, UnauthorizedError } from "../../expressError";
 import * as DeckService from "../models/deck.service"
-import bcrypt from "bcrypt"
+import { ensureLoggedIn } from "../../middleware/auth";
 require('dotenv').config()
 const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR
 
@@ -20,7 +20,7 @@ const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR
  * Authorization required: Logged in
  */
 
-router.post("/", async function (req, res, next) {
+router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, newDeckSchema);
     if (!validator.valid) {
@@ -28,7 +28,7 @@ router.post("/", async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    // const user = await User.authenticate(username, password);
+    const newDeck = await DeckService.createDeck(req.body);
     const token = createToken(user);
     console.log(token)
     return res.json({ token });
@@ -37,19 +37,37 @@ router.post("/", async function (req, res, next) {
   }
 });
 
-
-/** POST /:   { user } => { token }
+/** GET /deck/:id => { deck }
  *
- * user must include { username, password, firstName, lastName, email }
+ * Returns deck object with id=req.params.id .
  *
- * Returns JWT token which can be used to authenticate further requests.
- *
- * Authorization required: logged in
+ * Authorization required: none
  */
 
-router.post("/register", async function (req, res, next) {
+router.get("/:id", async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, userRegisterSchema);
+    const deck = await DeckService.getDeck(req.params.id);
+    return res.json({ deck });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
+/** PUT /deck/:id  { name, description, imgURL, format } => { deck }
+ *
+ * Returns newly edited deck object.
+ *
+ * Authorization required: Logged in
+ */
+
+router.put("/:id", async function (req, res, next) {
+  try {
+    const deck = await DeckService.getDeck(req.params.id)
+    if(deck.creator.username !== res.locals.user.username){
+      throw new UnauthorizedError
+    }
+    const validator = jsonschema.validate(req.body, newDeckSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
