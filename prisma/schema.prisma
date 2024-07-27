@@ -31,7 +31,7 @@ model Deck {
   format      Format
   creator     User           @relation("decks", fields: [creatorID], references: [id])
   creatorID   String
-  DeckCard    DeckCard[]
+  deckCard    DeckCard[]
   likes       UserDeckLike[]
 }
 
@@ -60,16 +60,15 @@ enum Format {
 }
 
 model Card {
-  id             String     @id
-  scryfallID     String
-  arenaID        String?
-  oracleID       String
-  name           String
-  manaCost       String
-  cmc            Int
-  color_identity Json
-  DeckCard       DeckCard[]
-  typeLine       String
+  id            String     @id
+  arenaID       String?
+  oracleID      String
+  name          String
+  manaCost      String
+  cmc           Int
+  colorIdentity Json
+  DeckCard      DeckCard[]
+  typeLine      String
 }
 
 model DeckCard {

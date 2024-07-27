@@ -9,6 +9,7 @@ import newDeckSchema from "../schemas/newDeck.json";
 import { BadRequestError, UnauthorizedError } from "../../expressError";
 import * as DeckService from "../models/deck.service"
 import { ensureLoggedIn } from "../../middleware/auth";
+import axios from 'axios'
 require('dotenv').config()
 const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR
 
