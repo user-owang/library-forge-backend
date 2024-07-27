@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "deckID": {
+      "type": "string"
+    },
+    "cardID": {
+      "type": "string"
+    },
+    "data": {
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "quantity": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": ["quantity"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "boardType": {
+              "type": "string",
+              "enum": ["deck", "sideboard", "maybeboard"]
+            }
+          },
+          "required": ["boardType"],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": ["deckID", "cardID", "data"]
+}

@@ -74,7 +74,7 @@ model Card {
 model DeckCard {
   deckID    String
   cardID    String
-  quantity  Int
+  quantity  Int       @default(1)
   boardType BoardType
   deck      Deck      @relation(fields: [deckID], references: [id])
   card      Card      @relation(fields: [cardID], references: [id])

@@ -12,14 +12,20 @@ export const createDeck = async (deck) =>{
 
 export const getDeck = async (id) => {
   return db.deck.findUnique({
-    where: {id}
+    where: {id},
+    include: {
+      creator: true
+    }
   })
 }
 
 export const updateDeck = async (id,data) => {
   return db.deck.update({
     where: {id},
-    data
+    data,
+    include:{
+      creator: true
+    }
   })
 }
 
@@ -68,4 +74,15 @@ export const addNewCard = async (cardData) => {
   })
 
   return true
+}
+
+export const updateDeckCard = async (deckID, cardID, data) => {
+  return db.deckCard.update({
+    where: {deckID, cardID},
+    data,
+    select: {
+      deckID: true,
+      cardID: true
+    }
+  })
 }
