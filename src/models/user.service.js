@@ -29,3 +29,17 @@ export const authUser = async (email, password) =>{
     }
   })
 }
+
+export const getUser = async (username) => {
+  return db.user.findUnique({
+    where:{ username },
+    include: {
+      decks: true,
+      likes:{
+        include: {
+          decks: true
+        }
+      }
+    }
+  })
+}

@@ -4,7 +4,6 @@ import jsonschema from "jsonschema";
 
 import express from "express";
 const router = new express.Router();
-import { createToken } from "../../helpers/tokens";
 import newDeckSchema from "../schemas/newDeck.json";
 import cardObjectLinkSchema from "../schemas/cardObjectLink.json"
 import editDeckCardSchema from "../schemas/editDeckCard.json"
@@ -14,7 +13,6 @@ import { ensureLoggedIn } from "../../middleware/auth";
 import axios from 'axios'
 import { db } from "../utils/db.server";
 require('dotenv').config()
-const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR
 
 
 /** POST /deck/:  { name, description, imgURL, format } => { deck }

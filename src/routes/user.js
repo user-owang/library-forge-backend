@@ -1,63 +1,35 @@
 "use strict";
 
-const jsonschema = require("jsonschema");
-const jwt = require("jsonwebtoken")
-const express = require("express");
+import jsonschema from "jsonschema";
+
+import express from "express";
 const router = new express.Router();
-const { createToken } = require("../../helpers/tokens");
-const { BadRequestError } = require("../../expressError");
-const newDeckSchema = require("../../schemas/newDeck.json");
+import newDeckSchema from "../schemas/newDeck.json";
+import { BadRequestError, UnauthorizedError, NotFoundError } from "../../expressError";
+import * as UserService from "../models/user.service"
+import { ensureLoggedIn } from "../../middleware/auth";
+import axios from 'axios'
+import { db } from "../utils/db.server";
+require('dotenv').config()
 
 
-/** POST users/deck:  { deckID } => { status: success }
+/** GET users/:username => { user }
  *
- * user likes a deck by deckID
+ * Returns user object matching username including created and liked decks
  *
  * Authorization required: Logged in
  */
 
-router.post("/deck", async function (req, res, next) {
+router.get("/:username", ensureLoggedIn, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, newDeckSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
+    const user = UserService.getUser(req.params.username)
+    if (user === null){
+      throw new NotFoundError
     }
-
-    // const user = await User.authenticate(username, password);
-    const token = createToken(user);
-    console.log(token)
-    return res.json({ token });
+    return res.json({ user });
   } catch (err) {
     return next(err);
   }
 });
-
-
-/** POST /:   { user } => { token }
- *
- * user must include { username, password, firstName, lastName, email }
- *
- * Returns JWT token which can be used to authenticate further requests.
- *
- * Authorization required: logged in
- */
-
-router.post("/register", async function (req, res, next) {
-  try {
-    const validator = jsonschema.validate(req.body, userRegisterSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
-    // need to hash password and pass through to register
-    const newUser = await User.register();
-    const token = createToken(newUser);
-    return res.status(201).json({ token });
-  } catch (err) {
-    return next(err);
-  }
-});
-
 
 module.exports = router;
