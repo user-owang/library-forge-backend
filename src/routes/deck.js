@@ -11,7 +11,6 @@ import { BadRequestError, UnauthorizedError } from "../../expressError";
 import * as DeckService from "../models/deck.service"
 import { ensureLoggedIn } from "../../middleware/auth";
 import axios from 'axios'
-import { db } from "../utils/db.server";
 require('dotenv').config()
 
 
@@ -72,7 +71,7 @@ router.put("/:id", async function (req, res, next) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-    await db.deck.updateDeck(req.params.id, req.body);
+    await DeckService.updateDeck(req.params.id, req.body);
     const updatedDeck = DeckService.getDeck(req.params.id);
     return res.status(200).json({ updatedDeck });
   } catch (err) {

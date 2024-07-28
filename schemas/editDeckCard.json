@@ -25,7 +25,7 @@
           "properties": {
             "boardType": {
               "type": "string",
-              "enum": ["deck", "sideboard", "maybeboard"]
+              "enum": ["deck", "sideboard", "maybeboard", "commander"]
             }
           },
           "required": ["boardType"],

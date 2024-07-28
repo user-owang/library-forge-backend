@@ -15,8 +15,7 @@
     },
     "email": {
       "type": "string",
-      "minLength": 10,
-      "pattern": "^[\\w!#$%&'*+/=?`{|}~^.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$"
+      "format": "email"
     }
   },
   "required": [

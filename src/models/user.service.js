@@ -43,3 +43,60 @@ export const getUser = async (username) => {
     }
   })
 }
+
+export const updateUser = async (username, data) => {
+  return db.user.update({
+    where: {username},
+    data,
+    select:{
+      username: true
+    }
+  })
+}
+
+export const userLikeDeck = async (username, deckID) =>{
+  const user = await db.user.findUnique({
+    where: {username},
+    select: {
+      id: true
+    }
+  })
+  const userID = user.id
+  return db.userLikeDeck.create({
+    data: {
+      userID,
+      deckID
+    },
+    select:{
+      userID: true
+    }
+  })
+}
+
+export const userUnlikeDeck = async (username, deckID) => {
+  const user = await db.user.findUnique({
+    where: {username},
+    select: {
+      id: true
+    }
+  })
+  const userID = user.id
+  return db.userLikeDeck.delete({
+    where: {
+      userID,
+      deckID
+    },
+    select:{
+      userID: true
+    }
+  })
+}
+
+export const getLikedDecks = async (userID) => {
+  return db.userLikeDeck.findMany({
+    where: {userID},
+    select: {
+      deckID:true
+    }
+  })
+}

@@ -7,7 +7,7 @@ const router = new express.Router();
 import { createToken } from "../../helpers/tokens";
 import userAuthSchema from "../../schemas/userAuth.json";
 import userRegisterSchema from "../../schemas/userRegister.json";
-import { BadRequestError } from "../../expressError";
+import { BadRequestError, UnauthorizedError } from "../../expressError";
 import * as UserService from "../models/user.service"
 import bcrypt from "bcrypt"
 require('dotenv').config()
@@ -31,6 +31,9 @@ router.post("/token", async function (req, res, next) {
     const { email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR)
     const user = await UserService.authUser(email, hashedPassword);
+    if (user === null){
+      throw new UnauthorizedError
+    }
     const token = createToken(user);
     console.log(token)
     return res.json({ token });
