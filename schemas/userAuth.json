@@ -1,20 +1,14 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://example.com/userAuth.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
     "email": {
       "type": "string",
-      "minLength": 10,
-      "pattern": "^[\\w!#$%&'*+/=?`{|}~^.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$"
+      "format": "email"
     },
     "password": {
       "type": "string"
     }
   },
-  "additionalProperties": false,
-  "required": [
-    "email",
-    "password"
-  ]
+  "required": ["email", "password"]
 }

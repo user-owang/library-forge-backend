@@ -1,9 +1,8 @@
-import { hash } from "crypto"
-import {db} from "../utils/db.server"
+const {db} = require("../utils/db.server")
 
 // Creates new user with given username, password (hashed), and email. Returns new user's username.
 
-export const createUser = async (username,password,email) =>{
+const createUser = async (username,password,email) =>{
   return db.user.create({
     data: {
       username,
@@ -18,19 +17,19 @@ export const createUser = async (username,password,email) =>{
 
 // Finds user with given email and password (hashed). Returns matching user's username or empty set.
 
-export const authUser = async (email, password) =>{
+const authUser = async (email) =>{
   return db.user.findUnique({
     where: {
-      email,
-      password
+      email
     },
     select:{
-      username: true
+      username: true,
+      password: true
     }
   })
 }
 
-export const getUser = async (username) => {
+const getUser = async (username) => {
   return db.user.findUnique({
     where:{ username },
     include: {
@@ -44,7 +43,7 @@ export const getUser = async (username) => {
   })
 }
 
-export const updateUser = async (username, data) => {
+const updateUser = async (username, data) => {
   return db.user.update({
     where: {username},
     data,
@@ -54,7 +53,7 @@ export const updateUser = async (username, data) => {
   })
 }
 
-export const userLikeDeck = async (username, deckID) =>{
+const userLikeDeck = async (username, deckID) =>{
   const user = await db.user.findUnique({
     where: {username},
     select: {
@@ -73,7 +72,7 @@ export const userLikeDeck = async (username, deckID) =>{
   })
 }
 
-export const userUnlikeDeck = async (username, deckID) => {
+const userUnlikeDeck = async (username, deckID) => {
   const user = await db.user.findUnique({
     where: {username},
     select: {
@@ -92,7 +91,7 @@ export const userUnlikeDeck = async (username, deckID) => {
   })
 }
 
-export const getLikedDecks = async (userID) => {
+const getLikedDecks = async (userID) => {
   return db.userLikeDeck.findMany({
     where: {userID},
     select: {
@@ -100,3 +99,13 @@ export const getLikedDecks = async (userID) => {
     }
   })
 }
+
+module.exports = {
+  createUser,
+  authUser,
+  getUser,
+  updateUser,
+  userLikeDeck,
+  userUnlikeDeck,
+  getLikedDecks,
+};

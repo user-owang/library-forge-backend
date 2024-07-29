@@ -1,17 +1,17 @@
 "use strict";
 
-import jsonschema from "jsonschema";
+const jsonschema = require("jsonschema");
 
-import express from "express";
+const express = require("express");
 const router = new express.Router();
-import { createToken } from "../../helpers/tokens";
-import userAuthSchema from "../../schemas/userAuth.json";
-import userRegisterSchema from "../../schemas/userRegister.json";
-import { BadRequestError, UnauthorizedError } from "../../expressError";
-import * as UserService from "../models/user.service"
-import bcrypt from "bcrypt"
+const { createToken } = require("../../helpers/tokens");
+const userAuthSchema = require("../../schemas/userAuth.json");
+const userRegisterSchema = require("../../schemas/userRegister.json");
+const { BadRequestError, UnauthorizedError } = require("../../expressError");
+const UserService = require("../models/user.service")
+const bcrypt = require("bcrypt")
 require('dotenv').config()
-const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR
+const BCRYPT_WORK_FACTOR = parseInt(process.env.BCRYPT_WORK_FACTOR, 10)
 
 /** POST /auth/token:  { username, password } => { token }
  *
@@ -29,12 +29,11 @@ router.post("/token", async function (req, res, next) {
     }
 
     const { email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR)
-    const user = await UserService.authUser(email, hashedPassword);
-    if (user === null){
+    const user = await UserService.authUser(email);
+    if(!user || !(await bcrypt.compare(password, user.passwod))){
       throw new UnauthorizedError
     }
-    const token = createToken(user);
+    const token = createToken({username: user.username});
     console.log(token)
     return res.json({ token });
   } catch (err) {
@@ -61,7 +60,7 @@ router.post("/register", async function (req, res, next) {
     }
     const { username, email, password } = req.body
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR); 
-    const newUser = await User.register(username,hashedPassword,email);
+    const newUser = await UserService.createUser(username,hashedPassword,email);
     const token = createToken(newUser);
     return res.status(201).json({ token });
   } catch (err) {

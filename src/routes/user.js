@@ -1,14 +1,14 @@
 "use strict";
 
-import jsonschema from "jsonschema";
+const jsonschema = require("jsonschema");
 
-import express from "express";
+const express = require("express");
 const router = new express.Router();
-import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } from "../../expressError";
-import * as UserService from "../models/user.service"
-import { ensureLoggedIn } from "../../middleware/auth";
-import editUserSchema from "../../schemas/editUser.json"
-import bcrypt from "bcrypt"
+const { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } = require("../../expressError");
+const UserService = require("../models/user.service")
+const { ensureLoggedIn } = require("../../middleware/auth");
+const editUserSchema = require("../../schemas/editUser.json")
+const bcrypt = require("bcrypt")
 require('dotenv').config()
 const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR
 

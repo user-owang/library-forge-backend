@@ -1,17 +1,16 @@
 "use strict";
 
-import jsonschema from "jsonschema";
+const jsonschema = require("jsonschema");
 
-import express from "express";
+const express = require("express");
 const router = new express.Router();
-import newDeckSchema from "../schemas/newDeck.json";
-import cardObjectLinkSchema from "../schemas/cardObjectLink.json"
-import editDeckCardSchema from "../schemas/editDeckCard.json"
-import { BadRequestError, UnauthorizedError } from "../../expressError";
-import * as DeckService from "../models/deck.service"
-import { ensureLoggedIn } from "../../middleware/auth";
-import axios from 'axios'
-require('dotenv').config()
+const newDeckSchema = require("../../schemas/newDeck.json");
+const cardObjectLinkSchema = require("../../schemas/cardObjectLink.json")
+const editDeckCardSchema = require("../../schemas/editDeckCard.json")
+const { BadRequestError, UnauthorizedError } = require("../../expressError");
+const DeckService = require("../models/deck.service")
+const { ensureLoggedIn } = require("../../middleware/auth");
+const axios = require('axios')
 
 
 /** POST /decks/:  { name, description, imgURL, format } => { deck }

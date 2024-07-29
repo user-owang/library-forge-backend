@@ -1,6 +1,6 @@
-import {db} from "../utils/db.server"
+const {db} = require("../utils/db.server")
 
-export const createDeck = async (deck) =>{
+const createDeck = async (deck) =>{
   
   return db.deck.create({
     data: deck,
@@ -10,7 +10,7 @@ export const createDeck = async (deck) =>{
   })
 }
 
-export const getDeck = async (id) => {
+const getDeck = async (id) => {
   return db.deck.findUnique({
     where: {id},
     include: {
@@ -21,7 +21,7 @@ export const getDeck = async (id) => {
   })
 }
 
-export const updateDeck = async (id,data) => {
+const updateDeck = async (id,data) => {
   return db.deck.update({
     where: {id},
     data,
@@ -31,7 +31,7 @@ export const updateDeck = async (id,data) => {
   })
 }
 
-export const getDeckList = async (deckID) => {
+const getDeckList = async (deckID) => {
   return db.deckCard.findMany({
     where:{deckID},
     include: {
@@ -41,13 +41,13 @@ export const getDeckList = async (deckID) => {
   })
 }
 
-export const addCardToDeck = async (data) => {
+const addCardToDeck = async (data) => {
   return db.deckCard.create({
     data
   })
 }
 
-export const addNewCard = async (cardData) => {
+const addNewCard = async (cardData) => {
   const exisitingCard = await db.card.findUnique({
     where:{
       id: cardData.id
@@ -78,7 +78,7 @@ export const addNewCard = async (cardData) => {
   return true
 }
 
-export const updateDeckCard = async (deckID, cardID, data) => {
+const updateDeckCard = async (deckID, cardID, data) => {
   return db.deckCard.update({
     where: {deckID, cardID},
     data,
@@ -89,7 +89,7 @@ export const updateDeckCard = async (deckID, cardID, data) => {
   })
 }
 
-export const getRecentDecks = async() => {
+const getRecentDecks = async() => {
   const min60Decks = await db.deckCard.groupBy({
     by: ['deckID'],
     _sum: {
@@ -128,7 +128,7 @@ export const getRecentDecks = async() => {
   return recentDecks
 }
 
-export const getMostLikeDecks = async() => {
+const getMostLikeDecks = async() => {
   const mostLikedDecks = await db.userDeckLike.groupBy({
     by: ['deckID'],
     _count: {
@@ -159,3 +159,15 @@ export const getMostLikeDecks = async() => {
 
   return topDecks;
 }
+
+module.exports = {
+  createDeck,
+  updateDeck,
+  getDeck,
+  getDeckList,
+  addCardToDeck,
+  addNewCard,
+  updateDeckCard,
+  getRecentDecks,
+  getMostLikeDecks,
+};
