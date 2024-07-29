@@ -30,7 +30,8 @@ router.post("/token", async function (req, res, next) {
 
     const { email, password } = req.body;
     const user = await UserService.authUser(email);
-    if(!user || !(await bcrypt.compare(password, user.passwod))){
+    console.log(user)
+    if(!user || !(await bcrypt.compare(password, user.password))){
       throw new UnauthorizedError
     }
     const token = createToken({username: user.username});
