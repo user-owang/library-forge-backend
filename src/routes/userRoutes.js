@@ -4,14 +4,18 @@ const jsonschema = require("jsonschema");
 
 const express = require("express");
 const router = new express.Router();
-const { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } = require("../../expressError");
-const UserService = require("../models/user.service")
+const {
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+  ForbiddenError,
+} = require("../../expressError");
+const UserService = require("../services/user.service");
 const { ensureLoggedIn } = require("../../middleware/auth");
-const editUserSchema = require("../../schemas/editUser.json")
-const bcrypt = require("bcrypt")
-require('dotenv').config()
-const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR
-
+const editUserSchema = require("../../schemas/editUser.json");
+const bcrypt = require("bcrypt");
+require("dotenv").config();
+const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR;
 
 /** GET users/:username => { user }
  *
@@ -22,9 +26,9 @@ const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR
 
 router.get("/:username", ensureLoggedIn, async function (req, res, next) {
   try {
-    const user = UserService.getUser(req.params.username)
-    if (user === null){
-      throw new NotFoundError
+    const user = UserService.getUser(req.params.username);
+    if (user === null) {
+      throw new NotFoundError();
     }
     return res.json({ user });
   } catch (err) {
@@ -33,7 +37,7 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
 });
 
 /** PATCH users/:username {password, data} => { user }
- * 
+ *
  * Accepts json object with password and data to update which contains username and email
  * Returns user object matching username including created and liked decks
  *
@@ -43,22 +47,22 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
 router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
   try {
     if (res.locals.user.username !== req.params.username) {
-      throw new ForbiddenError
+      throw new ForbiddenError();
     }
     const validator = jsonschema.validate(req.body, editUserSchema);
     if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
+      const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
-    const {password, data} = req.body
-    hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR)
+    const { password, data } = req.body;
+    hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
     const authUsername = await UserService.authUser(email, hashedPassword);
-    if (authUsername === null){
-      throw new UnauthorizedError()
+    if (authUsername === null) {
+      throw new UnauthorizedError();
     }
-    const user = UserService.updateUser(req.params.username,data)
-    if (user === null){
-      throw new NotFoundError
+    const user = UserService.updateUser(req.params.username, data);
+    if (user === null) {
+      throw new NotFoundError();
     }
     return res.json({ user });
   } catch (err) {
@@ -67,7 +71,7 @@ router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
 });
 
 /** POST users/like/:deckID => { userLikes }
- * 
+ *
  * Creates a UserDeckLike for the logged in user returns a list of liked deckIDs
  *
  * Authorization required: logged in
@@ -75,10 +79,10 @@ router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
 
 router.post("/like/:deckID", ensureLoggedIn, async function (req, res, next) {
   try {
-    const username = res.locals.user.username
-    const user = await UserService.userLikeDeck(username,req.params.deckID)
-    const likedDecks = await UserService.getLikedDecks(user.id)
-    const userLikes = likedDecks.map(d=>d.deckID)
+    const username = res.locals.user.username;
+    const user = await UserService.userLikeDeck(username, req.params.deckID);
+    const likedDecks = await UserService.getLikedDecks(user.id);
+    const userLikes = likedDecks.map((d) => d.deckID);
     return res.json({ userLikes });
   } catch (err) {
     return next(err);
@@ -86,7 +90,7 @@ router.post("/like/:deckID", ensureLoggedIn, async function (req, res, next) {
 });
 
 /** DELETE users/like/:deckID => { userLikes }
- * 
+ *
  * Deletes a UserDeckLike for the logged in user returns a list of liked deckIDs
  *
  * Authorization required: logged in
@@ -94,16 +98,14 @@ router.post("/like/:deckID", ensureLoggedIn, async function (req, res, next) {
 
 router.delete("/like/:deckID", ensureLoggedIn, async function (req, res, next) {
   try {
-    const username = res.locals.user.username
-    const user = await UserService.userUnlikeDeck(username,req.params.deckID)
-    const likedDecks = await UserService.getLikedDecks(user.id)
-    const userLikes = likedDecks.map(d=>d.deckID)
+    const username = res.locals.user.username;
+    const user = await UserService.userUnlikeDeck(username, req.params.deckID);
+    const likedDecks = await UserService.getLikedDecks(user.id);
+    const userLikes = likedDecks.map((d) => d.deckID);
     return res.json({ userLikes });
   } catch (err) {
     return next(err);
   }
 });
-
-
 
 module.exports = router;

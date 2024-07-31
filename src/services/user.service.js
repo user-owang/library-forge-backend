@@ -1,104 +1,104 @@
-const {db} = require("../utils/db.server")
+const { db } = require("../utils/db.server");
 
 // Creates new user with given username, password (hashed), and email. Returns new user's username.
 
-const createUser = async (username,password,email) =>{
+const createUser = async (username, password, email) => {
   return db.user.create({
     data: {
       username,
       password,
-      email
+      email,
     },
     select: {
-      username: true
-    }
-  })
-}
+      username: true,
+    },
+  });
+};
 
 // Finds user with given email and password (hashed). Returns matching user's username or empty set.
 
-const authUser = async (email) =>{
+const authUser = async (email) => {
   return db.user.findUnique({
     where: {
-      email
+      email,
     },
-    select:{
+    select: {
       username: true,
-      password: true
-    }
-  })
-}
+      password: true,
+    },
+  });
+};
 
 const getUser = async (username) => {
   return db.user.findUnique({
-    where:{ username },
+    where: { username },
     include: {
       decks: true,
-      likes:{
+      likes: {
         include: {
-          decks: true
-        }
-      }
-    }
-  })
-}
+          decks: true,
+        },
+      },
+    },
+  });
+};
 
 const updateUser = async (username, data) => {
   return db.user.update({
-    where: {username},
+    where: { username },
     data,
-    select:{
-      username: true
-    }
-  })
-}
-
-const userLikeDeck = async (username, deckID) =>{
-  const user = await db.user.findUnique({
-    where: {username},
     select: {
-      id: true
-    }
-  })
-  const userID = user.id
+      username: true,
+    },
+  });
+};
+
+const userLikeDeck = async (username, deckID) => {
+  const user = await db.user.findUnique({
+    where: { username },
+    select: {
+      id: true,
+    },
+  });
+  const userID = user.id;
   return db.userLikeDeck.create({
     data: {
       userID,
-      deckID
+      deckID,
     },
-    select:{
-      userID: true
-    }
-  })
-}
+    select: {
+      userID: true,
+    },
+  });
+};
 
 const userUnlikeDeck = async (username, deckID) => {
   const user = await db.user.findUnique({
-    where: {username},
+    where: { username },
     select: {
-      id: true
-    }
-  })
-  const userID = user.id
+      id: true,
+    },
+  });
+  const userID = user.id;
   return db.userLikeDeck.delete({
     where: {
       userID,
-      deckID
+      deckID,
     },
-    select:{
-      userID: true
-    }
-  })
-}
+    select: {
+      userID: true,
+    },
+  });
+};
 
 const getLikedDecks = async (userID) => {
   return db.userLikeDeck.findMany({
-    where: {userID},
+    where: { userID },
     select: {
-      deckID:true
-    }
-  })
-}
+      deckID: true,
+    },
+  });
+};
 
 module.exports = {
   createUser,
