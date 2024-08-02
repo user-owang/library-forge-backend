@@ -9,7 +9,7 @@ const cardObjectLinkSchema = require("../../schemas/cardObjectLink.json");
 const editDeckCardSchema = require("../../schemas/editDeckCard.json");
 const { BadRequestError, UnauthorizedError } = require("../../expressError");
 const DeckService = require("../services/deck.service");
-const { ensureLoggedIn } = require("../../middleware/auth");
+const { ensureLoggedIn, ensureDeckCreator } = require("../../middleware/auth");
 const axios = require("axios");
 
 /** POST /decks/:  { name, description, imgURL, format } => { deck }
@@ -57,12 +57,8 @@ router.get("/:id", async function (req, res, next) {
  * Authorization required: correct user
  */
 
-router.put("/:id", async function (req, res, next) {
+router.put("/:id", ensureDeckCreator, async function (req, res, next) {
   try {
-    const deck = await DeckService.getDeck(req.params.id);
-    if (deck.creator.username !== res.locals.user.username) {
-      throw new UnauthorizedError();
-    }
     const validator = jsonschema.validate(req.body, newDeckSchema);
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
@@ -76,7 +72,7 @@ router.put("/:id", async function (req, res, next) {
   }
 });
 
-/** POST /decks/:id/card  { uri: "https://api.scryfall.com/[xxxxx]" } => { deckList: [deckCard, deckCard] }
+/** POST /decks/:id/card  { uri: "https://api.scryfall.com/[xxxxx]", boardType } => { deckList: [deckCard, deckCard] }
  *
  * Takes json object with uri field that is a link to a direct link to a json card object from the scryfall API
  * Adds that card to the card table if not in it already, then adds that card to the deck.
@@ -85,12 +81,8 @@ router.put("/:id", async function (req, res, next) {
  * Authorization required: correct user
  */
 
-router.post("/:id/card", async function (req, res, next) {
+router.post("/:id/card", ensureDeckCreator, async function (req, res, next) {
   try {
-    const deck = await DeckService.getDeck(req.params.id);
-    if (deck.creator.username !== res.locals.user.username) {
-      throw new UnauthorizedError();
-    }
     const validator = jsonschema.validate(req.body, cardObjectLinkSchema);
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
@@ -99,7 +91,7 @@ router.post("/:id/card", async function (req, res, next) {
     const cardData = await axios(req.body.uri);
     const cardInDb = await DeckService.addNewCard(cardData);
     if (cardInDb) {
-      await DeckService.addCardToDeck(cardData);
+      await DeckService.addCardToDeck(req.params.id, cardData.id);
       const deckList = await DeckService.getDeckList(req.params.id);
       return res.status(201).json({ deckList });
     }
@@ -113,15 +105,11 @@ router.post("/:id/card", async function (req, res, next) {
  * Takes json object with deckID, cardID and data to change
  * Edits location or count and then returns updated deckList
  *
- * Authorization required: Logged in
+ * Authorization required: Correct user
  */
 
-router.patch("/:id/card", async function (req, res, next) {
+router.patch("/:id/card", ensureDeckCreator, async function (req, res, next) {
   try {
-    const deck = await DeckService.getDeck(req.params.id);
-    if (deck.creator.username !== res.locals.user.username) {
-      throw new UnauthorizedError();
-    }
     const validator = jsonschema.validate(req.body, editDeckCardSchema);
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);

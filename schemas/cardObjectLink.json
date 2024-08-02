@@ -5,6 +5,10 @@
     "uri": {
       "type": "string",
       "pattern": "^https://api\\.scryfall\\.com/.*$"
+    },
+    "boardType": {
+      "type": "string",
+      "enum": ["deck", "sideboard", "maybeboard", "commander"]
     }
   },
   "required": ["uri"]

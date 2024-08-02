@@ -15,12 +15,22 @@ const createUser = async (username, password, email) => {
   });
 };
 
-// Finds user with given email and password (hashed). Returns matching user's username or empty set.
-
-const authUser = async (email) => {
+const authUserEmail = async (email) => {
   return db.user.findUnique({
     where: {
       email,
+    },
+    select: {
+      username: true,
+      password: true,
+    },
+  });
+};
+
+const authUserUsername = async (username) => {
+  return db.user.findUnique({
+    where: {
+      username,
     },
     select: {
       username: true,
@@ -36,9 +46,21 @@ const getUser = async (username) => {
       decks: true,
       likes: {
         include: {
-          decks: true,
+          deck: true,
         },
       },
+    },
+  });
+};
+
+const deleteUser = async (username) => {
+  return db.user.delete({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+      username: true,
     },
   });
 };
@@ -102,8 +124,10 @@ const getLikedDecks = async (userID) => {
 
 module.exports = {
   createUser,
-  authUser,
+  authUserEmail,
+  authUserUsername,
   getUser,
+  deleteUser,
   updateUser,
   userLikeDeck,
   userUnlikeDeck,

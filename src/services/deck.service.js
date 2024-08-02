@@ -40,9 +40,13 @@ const getDeckList = async (deckID) => {
   });
 };
 
-const addCardToDeck = async (data) => {
+const addCardToDeck = async (deckID, cardID, boardType) => {
   return db.deckCard.create({
-    data,
+    data: {
+      deckID,
+      cardID,
+      boardType,
+    },
   });
 };
 

@@ -11,22 +11,26 @@ const {
   ForbiddenError,
 } = require("../../expressError");
 const UserService = require("../services/user.service");
-const { ensureLoggedIn } = require("../../middleware/auth");
+const {
+  ensureLoggedIn,
+  ensureCorrectUser,
+  ensureCorrectPassword,
+} = require("../../middleware/auth");
 const editUserSchema = require("../../schemas/editUser.json");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
-const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR;
+const BCRYPT_WORK_FACTOR = parseInt(process.env.BCRYPT_WORK_FACTOR);
 
 /** GET users/:username => { user }
  *
  * Returns user object matching username including created and liked decks
  *
- * Authorization required: Logged in
+ * Authorization required: none
  */
 
-router.get("/:username", ensureLoggedIn, async function (req, res, next) {
+router.get("/:username", async function (req, res, next) {
   try {
-    const user = UserService.getUser(req.params.username);
+    const user = await UserService.getUser(req.params.username);
     if (user === null) {
       throw new NotFoundError();
     }
@@ -41,34 +45,54 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
  * Accepts json object with password and data to update which contains username and email
  * Returns user object matching username including created and liked decks
  *
+ * Authorization required: Correct user, correct password
+ */
+
+router.patch(
+  "/:username",
+  ensureCorrectUser,
+  ensureCorrectPassword,
+  async function (req, res, next) {
+    try {
+      const validator = jsonschema.validate(req.body, editUserSchema);
+      if (!validator.valid) {
+        const errs = validator.errors.map((e) => e.stack);
+        throw new BadRequestError(errs);
+      }
+      const user = UserService.updateUser(req.params.username, data);
+      if (user === null) {
+        throw new NotFoundError();
+      }
+      return res.json({ user });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+/** DELETE users/:username { password } =>
+ *
+ * Deletes user.
+ *
  * Authorization required: Correct user
  */
 
-router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
-  try {
-    if (res.locals.user.username !== req.params.username) {
-      throw new ForbiddenError();
+router.delete(
+  "/:username",
+  ensureCorrectUser,
+  ensureCorrectPassword,
+  async function (req, res, next) {
+    try {
+      const user = UserService.deleteUser(req.params.username);
+      if (user === null) {
+        throw new ForbiddenError();
+      }
+      return res.json({ status: "success" });
+    } catch (err) {
+      return next(err);
     }
-    const validator = jsonschema.validate(req.body, editUserSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map((e) => e.stack);
-      throw new BadRequestError(errs);
-    }
-    const { password, data } = req.body;
-    hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
-    const authUsername = await UserService.authUser(email, hashedPassword);
-    if (authUsername === null) {
-      throw new UnauthorizedError();
-    }
-    const user = UserService.updateUser(req.params.username, data);
-    if (user === null) {
-      throw new NotFoundError();
-    }
-    return res.json({ user });
-  } catch (err) {
-    return next(err);
   }
-});
+);
 
 /** POST users/like/:deckID => { userLikes }
  *

@@ -1,7 +1,11 @@
 const jwt = require("jsonwebtoken");
-require("dotenv").config()
-const SECRET_KEY = process.env.SECRET_KEY
-const { UnauthorizedError } = require("../expressError");
+const UserService = require("../src/services/user.service");
+const DeckService = require("../src/services/deck.service");
+const bcrypt = require("bcrypt");
+require("dotenv").config();
+const SECRET_KEY = process.env.SECRET_KEY;
+const BCRYPT_WORK_FACTOR = parseInt(process.env.BCRYPT_WORK_FACTOR);
+const { UnauthorizedError, NotFoundError } = require("../expressError");
 
 function authenticateJWT(req, res, next) {
   try {
@@ -30,15 +34,35 @@ function ensureLoggedIn(req, res, next) {
   }
 }
 
-
-/** Middleware to use when they be logged in as an admin user.
+/** Middleware to use to verify password in req.body is correct.
  *
  *  If not, raises Unauthorized.
  */
 
-function ensureAdmin(req, res, next) {
+async function ensureCorrectPassword(req, res, next) {
   try {
-    if (!res.locals.user || !res.locals.user.isAdmin) {
+    const user = await UserService.authUserUsername(res.locals.user.username);
+    if (user === null) {
+      throw new NotFoundError();
+    }
+    if (!(await bcrypt.compare(req.body.password, user.password))) {
+      throw new UnauthorizedError();
+    }
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+}
+
+/** Middleware to use to verify that the request submitter is logged in as the creator of the deck.
+ *
+ *  If not, raises Unauthorized.
+ */
+
+async function ensureDeckCreator(req, res, next) {
+  try {
+    const deck = await DeckService.getDeck(req.params.id);
+    if (deck.creator.username !== res.locals.user.username) {
       throw new UnauthorizedError();
     }
     return next();
@@ -53,10 +77,10 @@ function ensureAdmin(req, res, next) {
  *  If not, raises Unauthorized.
  */
 
-function ensureCorrectUserOrAdmin(req, res, next) {
+function ensureCorrectUser(req, res, next) {
   try {
     const user = res.locals.user;
-    if (!(user && (user.isAdmin || user.username === req.params.username))) {
+    if (!(user && user.username === req.params.username)) {
       throw new UnauthorizedError();
     }
     return next();
@@ -65,10 +89,10 @@ function ensureCorrectUserOrAdmin(req, res, next) {
   }
 }
 
-
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
-  ensureAdmin,
-  ensureCorrectUserOrAdmin,
+  ensureDeckCreator,
+  ensureCorrectPassword,
+  ensureCorrectUser,
 };

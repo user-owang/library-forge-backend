@@ -29,8 +29,8 @@ model Deck {
   description String?
   imgURL      String
   format      Format
-  creator     User           @relation("decks", fields: [creatorID], references: [id])
-  creatorID   String
+  creator     User?          @relation("decks", fields: [creatorID], references: [id])
+  creatorID   String?
   deckCard    DeckCard[]
   likes       UserDeckLike[]
 }
@@ -76,7 +76,7 @@ model DeckCard {
   cardID    String
   quantity  Int       @default(1)
   boardType BoardType
-  deck      Deck      @relation(fields: [deckID], references: [id])
+  deck      Deck      @relation(fields: [deckID], references: [id], onDelete: Cascade)
   card      Card      @relation(fields: [cardID], references: [id])
 
   @@id([deckID, cardID])
@@ -85,8 +85,8 @@ model DeckCard {
 model UserDeckLike {
   userID String
   deckID String
-  user   User   @relation(fields: [userID], references: [id])
-  deck   Deck   @relation(fields: [deckID], references: [id])
+  user   User   @relation(fields: [userID], references: [id], onDelete: Cascade)
+  deck   Deck   @relation(fields: [deckID], references: [id], onDelete: Cascade)
 
   @@id([userID, deckID])
 }
