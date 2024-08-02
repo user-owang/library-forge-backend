@@ -72,6 +72,22 @@ router.put("/:id", ensureDeckCreator, async function (req, res, next) {
   }
 });
 
+/** DELETE /decks/:id => { status: success }
+ *
+ * Deletes deck (all deckCards cascade on delete).
+ *
+ * Authorization required: correct user
+ */
+
+router.delete("/:id", ensureDeckCreator, async function (req, res, next) {
+  try {
+    await DeckService.deleteDeck(req.params.id);
+    return res.status(200).json({ status: "success" });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 /** POST /decks/:id/card  { uri: "https://api.scryfall.com/[xxxxx]", boardType } => { deckList: [deckCard, deckCard] }
  *
  * Takes json object with uri field that is a link to a direct link to a json card object from the scryfall API
@@ -91,7 +107,11 @@ router.post("/:id/card", ensureDeckCreator, async function (req, res, next) {
     const cardData = await axios(req.body.uri);
     const cardInDb = await DeckService.addNewCard(cardData);
     if (cardInDb) {
-      await DeckService.addCardToDeck(req.params.id, cardData.id);
+      await DeckService.addCardToDeck(
+        req.params.id,
+        cardData.id,
+        req.body.boardType
+      );
       const deckList = await DeckService.getDeckList(req.params.id);
       return res.status(201).json({ deckList });
     }
@@ -120,6 +140,26 @@ router.patch("/:id/card", ensureDeckCreator, async function (req, res, next) {
       req.body.cardID,
       req.body.data
     );
+    const deckList = await DeckService.getDeckList(req.params.id);
+    return res.status(200).json({ deckList });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** DELETE /decks/:id/card  { cardID } => { deckList: [deckCard, deckCard] }
+ *
+ * Deletes deckCard and returns updated deckList
+ *
+ * Authorization required: Correct user
+ */
+
+router.delete("/:id/card", ensureDeckCreator, async function (req, res, next) {
+  try {
+    if (req.body.cardID === undefined) {
+      throw new BadRequestError();
+    }
+    await DeckService.deleteDeckCard(req.params.id, req.body.cardID);
     const deckList = await DeckService.getDeckList(req.params.id);
     return res.status(200).json({ deckList });
   } catch (err) {

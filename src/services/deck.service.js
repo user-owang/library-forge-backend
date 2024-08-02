@@ -30,6 +30,15 @@ const updateDeck = async (id, data) => {
   });
 };
 
+const deleteDeck = async (id) => {
+  return db.deck.delete({
+    where: { id },
+    select: {
+      id: true,
+    },
+  });
+};
+
 const getDeckList = async (deckID) => {
   return db.deckCard.findMany({
     where: { deckID },
@@ -87,6 +96,15 @@ const updateDeckCard = async (deckID, cardID, data) => {
     select: {
       deckID: true,
       cardID: true,
+    },
+  });
+};
+
+const deleteDeckCard = async (deckID, cardID) => {
+  return db.deckCard.delete({
+    where: {
+      deckID,
+      cardID,
     },
   });
 };
@@ -166,10 +184,12 @@ module.exports = {
   createDeck,
   updateDeck,
   getDeck,
+  deleteDeck,
   getDeckList,
   addCardToDeck,
   addNewCard,
   updateDeckCard,
   getRecentDecks,
   getMostLikeDecks,
+  deleteDeckCard,
 };
