@@ -1,8 +1,8 @@
 const { db } = require("../utils/db.server");
 
-const createDeck = async (deck) => {
+const createDeck = async (data) => {
   return db.deck.create({
-    data: deck,
+    data,
     select: {
       id: true,
     },
@@ -44,7 +44,18 @@ const getDeckList = async (deckID) => {
     where: { deckID },
     include: {
       card: true,
-      deck: true,
+      deck: {
+        select: {
+          name: true,
+          format: true,
+          creator: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+        },
+      },
     },
   });
 };
@@ -72,7 +83,7 @@ const addNewCard = async (cardData) => {
 
   let uploadData = {};
   if (cardData.arena_id !== undefined) {
-    uploadData["arenaID"] = cardData.arena_id;
+    uploadData["arenaID"] = cardData.arena_id.toString();
   }
   uploadData["id"] = cardData.id;
   uploadData["oracleID"] = cardData.oracle_id;
@@ -91,7 +102,12 @@ const addNewCard = async (cardData) => {
 
 const updateDeckCard = async (deckID, cardID, data) => {
   return db.deckCard.update({
-    where: { deckID, cardID },
+    where: {
+      deckID_cardID: {
+        deckID,
+        cardID,
+      },
+    },
     data,
     select: {
       deckID: true,
@@ -103,8 +119,10 @@ const updateDeckCard = async (deckID, cardID, data) => {
 const deleteDeckCard = async (deckID, cardID) => {
   return db.deckCard.delete({
     where: {
-      deckID,
-      cardID,
+      deckID_cardID: {
+        deckID,
+        cardID,
+      },
     },
   });
 };
@@ -127,7 +145,9 @@ const getRecentDecks = async () => {
     },
   });
 
+  console.error(min60Decks);
   const deckIds = min60Decks.map((d) => d.deckID);
+  console.error(deckIds);
 
   const recentDecks = await db.deck.findMany({
     where: {
@@ -148,7 +168,7 @@ const getRecentDecks = async () => {
   return recentDecks;
 };
 
-const getMostLikeDecks = async () => {
+const getTopDecks = async () => {
   const mostLikedDecks = await db.userDeckLike.groupBy({
     by: ["deckID"],
     _count: {
@@ -190,6 +210,6 @@ module.exports = {
   addNewCard,
   updateDeckCard,
   getRecentDecks,
-  getMostLikeDecks,
+  getTopDecks,
   deleteDeckCard,
 };

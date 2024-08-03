@@ -22,7 +22,7 @@ CREATE TABLE "Deck" (
     "description" TEXT,
     "imgURL" TEXT NOT NULL,
     "format" "Format" NOT NULL,
-    "creatorID" TEXT NOT NULL,
+    "creatorID" TEXT,
 
     CONSTRAINT "Deck_pkey" PRIMARY KEY ("id")
 );
@@ -66,16 +66,16 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
-ALTER TABLE "Deck" ADD CONSTRAINT "Deck_creatorID_fkey" FOREIGN KEY ("creatorID") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Deck" ADD CONSTRAINT "Deck_creatorID_fkey" FOREIGN KEY ("creatorID") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DeckCard" ADD CONSTRAINT "DeckCard_deckID_fkey" FOREIGN KEY ("deckID") REFERENCES "Deck"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "DeckCard" ADD CONSTRAINT "DeckCard_deckID_fkey" FOREIGN KEY ("deckID") REFERENCES "Deck"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "DeckCard" ADD CONSTRAINT "DeckCard_cardID_fkey" FOREIGN KEY ("cardID") REFERENCES "Card"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserDeckLike" ADD CONSTRAINT "UserDeckLike_userID_fkey" FOREIGN KEY ("userID") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserDeckLike" ADD CONSTRAINT "UserDeckLike_userID_fkey" FOREIGN KEY ("userID") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserDeckLike" ADD CONSTRAINT "UserDeckLike_deckID_fkey" FOREIGN KEY ("deckID") REFERENCES "Deck"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserDeckLike" ADD CONSTRAINT "UserDeckLike_deckID_fkey" FOREIGN KEY ("deckID") REFERENCES "Deck"("id") ON DELETE CASCADE ON UPDATE CASCADE;

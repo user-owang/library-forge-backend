@@ -29,12 +29,12 @@ router.post("/token", async function (req, res, next) {
     }
 
     const { email, password } = req.body;
-    const user = await UserService.authUser(email);
+    const user = await UserService.authUserEmail(email);
     console.log(user);
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedError();
     }
-    const token = createToken({ username: user.username });
+    const token = createToken(user);
     console.log(token);
     return res.json({ token });
   } catch (err) {

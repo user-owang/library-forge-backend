@@ -11,5 +11,5 @@
       "enum": ["deck", "sideboard", "maybeboard", "commander"]
     }
   },
-  "required": ["uri"]
+  "required": ["uri", "boardType"]
 }

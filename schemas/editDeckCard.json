@@ -2,9 +2,6 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "deckID": {
-      "type": "string"
-    },
     "cardID": {
       "type": "string"
     },
@@ -34,5 +31,5 @@
       ]
     }
   },
-  "required": ["deckID", "cardID", "data"]
+  "required": ["cardID", "data"]
 }

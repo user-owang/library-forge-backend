@@ -71,6 +71,7 @@ const updateUser = async (username, data) => {
     data,
     select: {
       username: true,
+      email: true,
     },
   });
 };
@@ -83,7 +84,7 @@ const userLikeDeck = async (username, deckID) => {
     },
   });
   const userID = user.id;
-  return db.userLikeDeck.create({
+  return db.userDeckLike.create({
     data: {
       userID,
       deckID,
@@ -102,10 +103,12 @@ const userUnlikeDeck = async (username, deckID) => {
     },
   });
   const userID = user.id;
-  return db.userLikeDeck.delete({
+  return db.userDeckLike.delete({
     where: {
-      userID,
-      deckID,
+      userID_deckID: {
+        userID,
+        deckID,
+      },
     },
     select: {
       userID: true,
@@ -114,7 +117,7 @@ const userUnlikeDeck = async (username, deckID) => {
 };
 
 const getLikedDecks = async (userID) => {
-  return db.userLikeDeck.findMany({
+  return db.userDeckLike.findMany({
     where: { userID },
     select: {
       deckID: true,

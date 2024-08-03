@@ -2,9 +2,6 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "creatorID": {
-      "type": "string"
-    },
     "name": {
       "type": "string",
       "minLength": 5,
@@ -43,5 +40,5 @@
       ]
     }
   },
-  "required": ["name", "format", "creatorID"]
+  "required": ["name", "format"]
 }
