@@ -10,6 +10,7 @@ const createUser = async (username, password, email) => {
       email,
     },
     select: {
+      id: true,
       username: true,
     },
   });

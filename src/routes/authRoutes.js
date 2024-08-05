@@ -29,14 +29,15 @@ router.post("/token", async function (req, res, next) {
     }
 
     const { email, password } = req.body;
-    const user = await UserService.authUserEmail(email);
-    console.log(user);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    const authUser = await UserService.authUserEmail(email);
+    if (!authUser || !(await bcrypt.compare(password, authUser.password))) {
       throw new UnauthorizedError();
     }
-    const token = createToken(user);
+    const user = await UserService.getUser(authUser.username);
+    const tokenData = { id: user.id, username: user.username };
+    const token = createToken(tokenData);
     console.log(token);
-    return res.json({ token });
+    return res.json({ token, user });
   } catch (err) {
     return next(err);
   }
@@ -66,7 +67,8 @@ router.post("/register", async function (req, res, next) {
       email
     );
     const token = createToken(newUser);
-    return res.status(201).json({ token });
+    const user = await UserService.getUser(username);
+    return res.status(201).json({ token, user });
   } catch (err) {
     return next(err);
   }
