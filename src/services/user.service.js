@@ -126,6 +126,17 @@ const getLikedDecks = async (userID) => {
   });
 };
 
+const searchUsername = async (term, num) => {
+  return db.user.findMany({
+    where: {
+      username: {
+        contains: term,
+      },
+    },
+    take: num,
+  });
+};
+
 module.exports = {
   createUser,
   authUserEmail,
@@ -136,4 +147,5 @@ module.exports = {
   userLikeDeck,
   userUnlikeDeck,
   getLikedDecks,
+  searchUsername,
 };

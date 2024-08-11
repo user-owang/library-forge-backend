@@ -191,13 +191,29 @@ const getTopDecks = async () => {
       },
     },
     include: {
-      creator: true, // Include creator details if needed
-      deckCard: true, // Include deckCard details if needed
-      likes: true, // Include likes if needed
+      creator: true,
+      deckCard: true,
+      likes: true,
     },
   });
 
   return topDecks;
+};
+
+const searchDeckName = async (term, num) => {
+  return db.deck.findMany({
+    where: {
+      name: {
+        contains: term,
+      },
+    },
+    include: {
+      creator: true,
+      deckCard: true,
+      likes: true,
+    },
+    take: num,
+  });
 };
 
 module.exports = {
@@ -212,4 +228,5 @@ module.exports = {
   getRecentDecks,
   getTopDecks,
   deleteDeckCard,
+  searchDeckName,
 };
