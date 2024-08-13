@@ -200,18 +200,19 @@ const getTopDecks = async () => {
   return topDecks;
 };
 
-const searchDeckName = async (term, num) => {
+const searchDeckName = async (term, num, page = 1) => {
+  const skip = page - 1 * num;
   return db.deck.findMany({
     where: {
       name: {
         contains: term,
+        mode: "insensitive",
       },
     },
-    include: {
-      creator: true,
-      deckCard: true,
-      likes: true,
+    select: {
+      name: true,
     },
+    skip,
     take: num,
   });
 };

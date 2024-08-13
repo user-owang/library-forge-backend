@@ -11,11 +11,11 @@ const {
 const UserService = require("../services/user.service");
 const DeckService = require("../services/deck.service");
 
-/** POST /search/ac/users/:term => { results }
+/** POST /search/ac/users/:term => { autocomplete: [username, username ...] }
  *
- * Accepts a string (term) and returns a list of at most 20 autocompleted usernames in results
+ * Accepts a string (term) and returns a list of at most 20 autocompleted users in results
  *
- * Authorization required: logged in
+ * Authorization required: none
  */
 
 router.post("/ac/users/:term", async function (req, res, next) {
@@ -31,11 +31,11 @@ router.post("/ac/users/:term", async function (req, res, next) {
   }
 });
 
-/** POST /autocomplete/decks/:term => { results }
+/** POST /autocomplete/decks/:term => { autocomplete: [deckName, deckName ...] }
  *
- * Accepts a string (term) and returns a list of at most 20 autocompleted usernames in results
+ * Accepts a string (term) and returns a list of at most 20 autocompleted decks in results
  *
- * Authorization required: logged in
+ * Authorization required: none
  */
 
 router.post("/ac/decks/:term", async function (req, res, next) {
