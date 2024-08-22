@@ -135,9 +135,6 @@ const searchUsername = async (term, num, page = 1) => {
         mode: "insensitive",
       },
     },
-    select: {
-      username: true,
-    },
     skip,
     take: num,
   });

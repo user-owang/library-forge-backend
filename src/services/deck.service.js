@@ -209,9 +209,6 @@ const searchDeckName = async (term, num, page = 1) => {
         mode: "insensitive",
       },
     },
-    select: {
-      name: true,
-    },
     skip,
     take: num,
   });
