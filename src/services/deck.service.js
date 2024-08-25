@@ -201,7 +201,7 @@ const getTopDecks = async () => {
 };
 
 const searchDeckName = async (term, num, page = 1) => {
-  const skip = page - 1 * num;
+  const skip = (page - 1) * num;
   return db.deck.findMany({
     where: {
       name: {

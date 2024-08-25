@@ -127,7 +127,7 @@ const getLikedDecks = async (userID) => {
 };
 
 const searchUsername = async (term, num, page = 1) => {
-  const skip = page - 1 * num;
+  const skip = (page - 1) * num;
   return db.user.findMany({
     where: {
       username: {

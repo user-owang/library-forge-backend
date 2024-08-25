@@ -11,14 +11,14 @@ const {
 const UserService = require("../services/user.service");
 const DeckService = require("../services/deck.service");
 
-/** POST /search/ac/users/:term => { autocomplete: [username, username ...] }
+/** GET /search/ac/users/:term => { autocomplete: [user, user ...] }
  *
  * Accepts a string (term) and returns a list of at most 20 autocompleted users in results
  *
  * Authorization required: none
  */
 
-router.post("/ac/users/:term", async function (req, res, next) {
+router.get("/ac/users/:term", async function (req, res, next) {
   try {
     const term = req.params.term;
     if (term.length < 3) {
@@ -31,20 +31,56 @@ router.post("/ac/users/:term", async function (req, res, next) {
   }
 });
 
-/** POST /autocomplete/decks/:term => { autocomplete: [deckName, deckName ...] }
+/** GET /search/ac/decks/:term => { autocomplete: [deck, deck ...] }
  *
  * Accepts a string (term) and returns a list of at most 20 autocompleted decks in results
  *
  * Authorization required: none
  */
 
-router.post("/ac/decks/:term", async function (req, res, next) {
+router.get("/ac/decks/:term", async function (req, res, next) {
   try {
     const term = req.params.term;
     if (term.length < 3) {
       return res.json({ autocomplete: [] });
     }
     const autocomplete = await DeckService.searchDeckName(term, 20);
+    return res.json({ autocomplete });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** GET /search/users/:term/:page => { autocomplete: [deckName, deckName ...] }
+ *
+ * Accepts a string (term) and int page and returns a list of at most 60 matching users in results
+ *
+ * Authorization required: none
+ */
+
+router.get("/decks/:term/:page", async function (req, res, next) {
+  try {
+    const term = req.params.term;
+    const page = parseInt(req.params.page);
+    const data = await UserService.searchDeckName(term, 20, page);
+    return res.json({ autocomplete });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** GET /autocomplete/decks/:term => { autocomplete: [deckName, deckName ...] }
+ *
+ * Accepts a string (term) and int page and returns a list of at most 60 matching decks in results
+ *
+ * Authorization required: none
+ */
+
+router.get("/decks/:term/:page", async function (req, res, next) {
+  try {
+    const term = req.params.term;
+    const page = parseInt(req.params.page);
+    const autocomplete = await DeckService.searchDeckName(term, 20, page);
     return res.json({ autocomplete });
   } catch (err) {
     return next(err);

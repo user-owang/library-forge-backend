@@ -23,7 +23,7 @@ app.use(authenticateJWT);
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
 app.use("/decks", decksRoutes);
-app.user("/search", searchRoutes);
+app.use("/search", searchRoutes);
 
 app.use(function (req, res, next) {
   return next(new NotFoundError());
