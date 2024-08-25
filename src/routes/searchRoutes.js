@@ -62,8 +62,8 @@ router.get("/decks/:term/:page", async function (req, res, next) {
   try {
     const term = req.params.term;
     const page = parseInt(req.params.page);
-    const data = await UserService.searchDeckName(term, 20, page);
-    return res.json({ autocomplete });
+    const data = await UserService.searchUsername(term, 20, page);
+    return res.json({ data });
   } catch (err) {
     return next(err);
   }
@@ -80,8 +80,8 @@ router.get("/decks/:term/:page", async function (req, res, next) {
   try {
     const term = req.params.term;
     const page = parseInt(req.params.page);
-    const autocomplete = await DeckService.searchDeckName(term, 20, page);
-    return res.json({ autocomplete });
+    const data = await DeckService.searchDeckName(term, 20, page);
+    return res.json({ data });
   } catch (err) {
     return next(err);
   }
