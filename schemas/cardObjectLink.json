@@ -8,7 +8,7 @@
     },
     "boardType": {
       "type": "string",
-      "enum": ["deck", "sideboard", "maybeboard", "commander"]
+      "enum": ["deck", "sideboard", "maybeboard", "commandzone"]
     }
   },
   "required": ["uri", "boardType"]

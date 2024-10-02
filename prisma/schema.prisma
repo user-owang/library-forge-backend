@@ -33,6 +33,8 @@ model Deck {
   creatorID   String?
   deckCard    DeckCard[]
   likes       UserDeckLike[]
+
+  @@unique([creatorID, name])
 }
 
 enum Format {
@@ -69,6 +71,8 @@ model Card {
   colorIdentity Json
   DeckCard      DeckCard[]
   typeLine      String
+  rarity        String
+  img_url       String
 }
 
 model DeckCard {
@@ -95,5 +99,5 @@ enum BoardType {
   deck
   sideboard
   maybeboard
-  commander
+  commandzone
 }

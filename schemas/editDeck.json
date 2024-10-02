@@ -4,8 +4,7 @@
   "properties": {
     "name": {
       "type": "string",
-      "minLength": 5,
-      "maxLength": 30
+      "minLength": 3
     },
     "description": {
       "type": "string"
@@ -40,5 +39,5 @@
       ]
     }
   },
-  "required": ["name", "format"]
+  "required": ["name", "format", "imgURL", "description"]
 }

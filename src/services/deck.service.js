@@ -14,7 +14,7 @@ const getDeck = async (id) => {
     where: { id },
     include: {
       creator: true,
-      deckCard: true,
+      deckCard: { include: { card: true } },
       likes: true,
     },
   });
@@ -88,10 +88,24 @@ const addNewCard = async (cardData) => {
   uploadData["id"] = cardData.id;
   uploadData["oracleID"] = cardData.oracle_id;
   uploadData["name"] = cardData.name;
-  uploadData["cmc"] = cardData.cmc;
-  uploadData["manaCost"] = cardData.mana_cost;
+  if (cardData.cmc !== undefined) {
+    uploadData["cmc"] = cardData.cmc;
+  } else {
+    uploadData["cmc"] = cardData.card_faces[0].cmc;
+  }
+  if (cardData.mana_cost !== undefined) {
+    uploadData["manaCost"] = cardData.mana_cost;
+  } else {
+    uploadData["manaCost"] = cardData.card_faces[0].mana_cost;
+  }
   uploadData["colorIdentity"] = cardData.color_identity;
   uploadData["typeLine"] = cardData.type_line;
+  uploadData["rarity"] = cardData.rarity;
+  if (cardData.image_uris !== undefined) {
+    uploadData["img_url"] = cardData.image_uris.png;
+  } else {
+    uploadData["img_url"] = cardData.card_faces[0].image_uris.png;
+  }
 
   const newCard = await db.card.create({
     data: uploadData,
@@ -208,6 +222,10 @@ const searchDeckName = async (term, num, page = 1) => {
         contains: term,
         mode: "insensitive",
       },
+    },
+    include: {
+      creator: true,
+      likes: true,
     },
     skip,
     take: num,

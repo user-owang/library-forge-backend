@@ -47,7 +47,7 @@ const getUser = async (username) => {
       decks: true,
       likes: {
         include: {
-          deck: true,
+          deck: { include: { creator: { select: { username: true } } } },
         },
       },
     },
@@ -120,8 +120,8 @@ const userUnlikeDeck = async (username, deckID) => {
 const getLikedDecks = async (userID) => {
   return db.userDeckLike.findMany({
     where: { userID },
-    select: {
-      deckID: true,
+    include: {
+      deck: { include: { creator: { select: { username: true } } } },
     },
   });
 };
@@ -135,6 +135,7 @@ const searchUsername = async (term, num, page = 1) => {
         mode: "insensitive",
       },
     },
+    include: { decks: true },
     skip,
     take: num,
   });

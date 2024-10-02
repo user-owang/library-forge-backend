@@ -2,7 +2,7 @@
 CREATE TYPE "Format" AS ENUM ('standard', 'future', 'historic', 'timeless', 'gladiator', 'pioneer', 'explorer', 'modern', 'legacy', 'pauper', 'vintage', 'penny', 'commander', 'oathbreaker', 'standardbrawl', 'brawl', 'alchemy', 'paupercommander', 'oldschool', 'premodern', 'predh');
 
 -- CreateEnum
-CREATE TYPE "BoardType" AS ENUM ('deck', 'sideboard', 'maybeboard', 'commander');
+CREATE TYPE "BoardType" AS ENUM ('deck', 'sideboard', 'maybeboard', 'commandzone');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -37,6 +37,8 @@ CREATE TABLE "Card" (
     "cmc" INTEGER NOT NULL,
     "colorIdentity" JSONB NOT NULL,
     "typeLine" TEXT NOT NULL,
+    "rarity" TEXT NOT NULL,
+    "img_url" TEXT NOT NULL,
 
     CONSTRAINT "Card_pkey" PRIMARY KEY ("id")
 );
@@ -64,6 +66,9 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Deck_creatorID_name_key" ON "Deck"("creatorID", "name");
 
 -- AddForeignKey
 ALTER TABLE "Deck" ADD CONSTRAINT "Deck_creatorID_fkey" FOREIGN KEY ("creatorID") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

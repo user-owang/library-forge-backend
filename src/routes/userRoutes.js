@@ -34,8 +34,7 @@ router.post("/like/:deckID", ensureLoggedIn, async function (req, res, next) {
     const { id, username } = res.locals.user;
     await UserService.userLikeDeck(username, req.params.deckID);
     const likedDecks = await UserService.getLikedDecks(id);
-    const userLikes = likedDecks.map((d) => d.deckID);
-    return res.json({ userLikes });
+    return res.json({ likedDecks });
   } catch (err) {
     return next(err);
   }
@@ -53,8 +52,7 @@ router.delete("/like/:deckID", ensureLoggedIn, async function (req, res, next) {
     const { id, username } = res.locals.user;
     await UserService.userUnlikeDeck(username, req.params.deckID);
     const likedDecks = await UserService.getLikedDecks(id);
-    const userLikes = likedDecks.map((d) => d.deckID);
-    return res.json({ userLikes });
+    return res.json({ likedDecks });
   } catch (err) {
     return next(err);
   }

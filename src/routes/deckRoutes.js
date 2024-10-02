@@ -8,7 +8,11 @@ const newDeckSchema = require("../../schemas/newDeck.json");
 const editDeckSchema = require("../../schemas/editDeck.json");
 const cardObjectLinkSchema = require("../../schemas/cardObjectLink.json");
 const editDeckCardSchema = require("../../schemas/editDeckCard.json");
-const { BadRequestError, UnauthorizedError } = require("../../expressError");
+const {
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+} = require("../../expressError");
 const DeckService = require("../services/deck.service");
 const { ensureLoggedIn, ensureDeckCreator } = require("../../middleware/auth");
 const axios = require("axios");
@@ -29,7 +33,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
     }
 
     const newDeck = await DeckService.createDeck(req.body);
-    return res.status(201).json({ newDeck });
+    return res.json({ newDeck });
   } catch (err) {
     return next(err);
   }
@@ -77,7 +81,11 @@ router.get("/top", async function (req, res, next) {
 router.get("/:id", async function (req, res, next) {
   try {
     const deck = await DeckService.getDeck(req.params.id);
-    return res.json({ deck });
+    if (deck) {
+      return res.json({ deck });
+    } else {
+      throw new NotFoundError();
+    }
   } catch (err) {
     return next(err);
   }

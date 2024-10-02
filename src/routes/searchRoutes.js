@@ -58,11 +58,11 @@ router.get("/ac/decks/:term", async function (req, res, next) {
  * Authorization required: none
  */
 
-router.get("/decks/:term/:page", async function (req, res, next) {
+router.get("/users/:term/:page", async function (req, res, next) {
   try {
     const term = req.params.term;
     const page = parseInt(req.params.page);
-    const data = await UserService.searchUsername(term, 20, page);
+    const data = await UserService.searchUsername(term, 175, page);
     return res.json({ data });
   } catch (err) {
     return next(err);
@@ -80,7 +80,7 @@ router.get("/decks/:term/:page", async function (req, res, next) {
   try {
     const term = req.params.term;
     const page = parseInt(req.params.page);
-    const data = await DeckService.searchDeckName(term, 20, page);
+    const data = await DeckService.searchDeckName(term, 175, page);
     return res.json({ data });
   } catch (err) {
     return next(err);

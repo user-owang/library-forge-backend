@@ -74,4 +74,16 @@ router.post("/register", async function (req, res, next) {
   }
 });
 
+router.get("/check-user-and-token/:username", async function (req, res, next) {
+  try {
+    if (res.locals.user.username !== req.params.username) {
+      throw new UnauthorizedError();
+    }
+    const user = await UserService.getUser(req.params.username);
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
