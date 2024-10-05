@@ -104,7 +104,7 @@ router.patch(
         throw new NotFoundError();
       }
       const token = createToken(user);
-      return res.json({ token });
+      return res.json({ user, token });
     } catch (err) {
       return next(err);
     }

@@ -44,10 +44,28 @@ const getUser = async (username) => {
   return db.user.findUnique({
     where: { username },
     include: {
-      decks: true,
+      decks: {
+        include: {
+          creator: {
+            select: { username: true },
+          },
+          _count: {
+            select: { likes: true },
+          },
+        },
+      },
       likes: {
         include: {
-          deck: { include: { creator: { select: { username: true } } } },
+          deck: {
+            include: {
+              creator: {
+                select: { username: true },
+              },
+              _count: {
+                select: { likes: true },
+              },
+            },
+          },
         },
       },
     },
@@ -70,9 +88,31 @@ const updateUser = async (username, data) => {
   return db.user.update({
     where: { username },
     data,
-    select: {
-      username: true,
-      email: true,
+    include: {
+      decks: {
+        include: {
+          creator: {
+            select: { username: true },
+          },
+          _count: {
+            select: { likes: true },
+          },
+        },
+      },
+      likes: {
+        include: {
+          deck: {
+            include: {
+              creator: {
+                select: { username: true },
+              },
+              _count: {
+                select: { likes: true },
+              },
+            },
+          },
+        },
+      },
     },
   });
 };
@@ -121,7 +161,16 @@ const getLikedDecks = async (userID) => {
   return db.userDeckLike.findMany({
     where: { userID },
     include: {
-      deck: { include: { creator: { select: { username: true } } } },
+      deck: {
+        include: {
+          creator: {
+            select: { username: true },
+          },
+          _count: {
+            select: { likes: true },
+          },
+        },
+      },
     },
   });
 };
