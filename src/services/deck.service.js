@@ -14,7 +14,17 @@ const getDeck = async (id) => {
     where: { id },
     include: {
       creator: true,
-      deckCard: { include: { card: true } },
+      deckCard: {
+        include: { card: true },
+        orderBy: [
+          {
+            card: { cmc: "asc" },
+          },
+          {
+            card: { name: "asc" },
+          },
+        ],
+      },
       likes: true,
     },
   });
@@ -42,6 +52,14 @@ const deleteDeck = async (id) => {
 const getDeckList = async (deckID) => {
   return db.deckCard.findMany({
     where: { deckID },
+    orderBy: [
+      {
+        card: { cmc: "asc" },
+      },
+      {
+        card: { name: "asc" },
+      },
+    ],
     include: {
       card: true,
       deck: {
