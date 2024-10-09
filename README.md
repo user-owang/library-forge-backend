@@ -1,6 +1,6 @@
 # Library Forge
 
-Library Forge is an online Magic the Gathering (MTG) resource that helps users create decks of their own and interact with decks made by others. This is the repository for the backend and is utilizing the Scryfall API and Vite to structure a React framework. This is my second capstone project for my software engineering bootcamp.
+Library Forge is an online Magic the Gathering (MTG) resource that helps users create decks of their own and interact with decks made by others. This is the repository for the backend and is utilizing NodeJS, Express and Prisma ORM to manage RESTful API for the frontend. This is my second capstone project for my software engineering bootcamp.
 
 ## Features
 
