@@ -42,5 +42,5 @@ The key feature that set Library Forge apart is the visual interface when buildi
    ```
    npm run start
    ```
-8. Proceed [here](https://github.com/user-owang/library-forge-frontend/blob/main/README.md) for instructions to launch the frontend
+8. Proceed [here](https://github.com/user-owang/library-forge-frontend?tab=readme-ov-file#readme) for instructions to launch the frontend
 
